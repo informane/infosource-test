@@ -1,0 +1,29 @@
+Options +FollowSymlinks
+RewriteEngine On
+
+# End the processing, if a rewrite already occurred
+#RewriteRule ^(frontend|backend)/web/ - [L]
+
+# Handle the case of backend, skip ([S=1]) the following rule, if current matched
+    RewriteCond %{REQUEST_URI} ^/(back)
+        RewriteRule ^back/assets/(.*)$ backend/web/assets/$1 [L]
+        RewriteRule ^back/css/(.*)$ backend/web/css/$1 [L]
+        RewriteRule ^back/js/(.*)$ backend/web/js/$1 [L]
+        RewriteRule ^back/img/(.*)$ backend/web/img/$1 [L]
+    RewriteCond %{REQUEST_URI} !^/backend/web/(assets|js|css|js)/
+    RewriteCond %{REQUEST_URI} ^/(back)
+    RewriteRule ^.*$ backend/web/index.php [L]
+# handle the case of frontend
+    RewriteCond %{REQUEST_URI} ^/(assets|css|js|images)
+    RewriteRule ^(.*)$ frontend/web/$1 [L]
+
+    RewriteCond %{REQUEST_URI} !^/(frontend|backend|api)/web/(assets|css|js)/
+    RewriteCond %{REQUEST_URI} !index.php
+    RewriteCond %{REQUEST_FILENAME} !-f [OR]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^.*$ frontend/web/index.php
+
+# Uncomment the following, if you want speaking URL
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^([^/]+/web)/.*$ $1/index.php
