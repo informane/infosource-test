@@ -76,7 +76,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $news = array_slice($this->getSortedNews(),0, 5);
+        $news = array_slice(News::getSortedNews(),0, 5);
 
         return $this->render('index', [
             'news' => $news
@@ -85,7 +85,7 @@ class SiteController extends Controller
 
     public function actionShuffle()
     {
-        $new = $this->getSortedNews()[0];
+        $new = News::getSortedNews()[0];
         $text = explode(' ',$new->text);
         shuffle($text);
         $new->text = implode(" ", $text);
@@ -94,23 +94,7 @@ class SiteController extends Controller
         $this->redirect(Yii::$app->request->referrer);
     }
 
-    public function getSortedNews()
-    {
-        $news = News::find()->all();
 
-        //$cookies = Yii::$app->request->cookies;
-        //var_dump($_COOKIE);
-        foreach($news as $i => $new){
-            if(isset($_COOKIE[$new->id]))
-                $news[$i]->date = $_COOKIE["{$new->id}"];
-            else
-                $news[$i]->date = date('Y-m-d H:i:s',strtotime('-2 years'));
-
-        }
-        usort($news, function($a, $b) {return strtotime($a->date) < strtotime($b->date) ? -1 : 1;});
-
-        return $news;
-    }
 
     public function actionViewNew($id){
         $new = News::findOne($id);

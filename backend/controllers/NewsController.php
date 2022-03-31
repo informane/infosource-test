@@ -8,7 +8,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use linslin\yii2\curl;
+
 /**
  * NewsController implements the CRUD actions for News model.
  */
@@ -91,15 +91,8 @@ class NewsController extends Controller
     {
         $model = new News();
 
-        $curl = new curl\Curl();
-        $words_number = random_int(1,30);
-        $text = $curl->get("http://random-word-api.herokuapp.com//word?number=$words_number");
-        $text = explode(',',preg_replace('/\[(.*)\]/','$1',$text));
-        foreach ($text as $i => $word){
-            $text[$i] = preg_replace('/\"(.*)\"/','$1',$text[$i]);
-        }
-        $model->text = implode(' ', $text);
-        var_dump($model);
+        $model->generateText();
+
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['index']);
